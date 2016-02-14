@@ -1,0 +1,87 @@
+/Users/zhuyongxuan1/.rbenv/versions/2.2.3/bin/ruby -r ./siteconf20160213-26609-lbyayl.rb extconf.rb
+checking for main() in -lpthread... yes
+checking for main() in -lobjc... yes
+checking for v8.h... yes
+checking for main() in -lv8... yes
+creating Makefile
+
+make "DESTDIR=" clean
+
+make "DESTDIR="
+compiling accessor.cc
+clang: warning: argument unused during compilation: '-rdynamic'
+In file included from accessor.cc:1:
+In file included from ./rr.h:4:
+/usr/local/include/v8.h:355:33: error: use of undeclared identifier 'nullptr'
+  V8_INLINE MaybeLocal() : val_(nullptr) {}
+                                ^
+/usr/local/include/v8.h:362:51: error: use of undeclared identifier 'nullptr'
+  V8_INLINE bool IsEmpty() const { return val_ == nullptr; }
+                                                  ^
+/usr/local/include/v8.h:366:29: error: use of undeclared identifier 'nullptr'
+    out->val_ = IsEmpty() ? nullptr : this->val_;
+                            ^
+/usr/local/include/v8.h:432:50: error: use of undeclared identifier 'nullptr'
+  bool IsFirstPass() const { return callback_ != nullptr; }
+                                                 ^
+/usr/local/include/v8.h:803:42: error: use of undeclared identifier 'nullptr'
+  V8_INLINE Global() : PersistentBase<T>(nullptr) {}
+                                         ^
+/usr/local/include/v8.h:828:18: error: use of undeclared identifier 'nullptr'
+    other.val_ = nullptr;
+                 ^
+/usr/local/include/v8.h:840:18: error: use of undeclared identifier 'nullptr'
+      rhs.val_ = nullptr;
+                 ^
+/usr/local/include/v8.h:1105:52: error: use of undeclared identifier 'nullptr'
+                            ScriptOrigin* origin = nullptr));
+                                                   ^
+/usr/local/include/v8config.h:364:48: note: expanded from macro 'V8_DEPRECATE_SOON'
+#define V8_DEPRECATE_SOON(message, declarator) declarator
+                                               ^
+In file included from accessor.cc:1:
+In file included from ./rr.h:4:
+/usr/local/include/v8.h:1108:30: error: use of undeclared identifier 'nullptr'
+      ScriptOrigin* origin = nullptr);
+                             ^
+/usr/local/include/v8.h:3250:36: error: use of undeclared identifier 'nullptr'
+    return NewInstance(context, 0, nullptr);
+                                   ^
+/usr/local/include/v8.h:7262:27: error: use of undeclared identifier 'nullptr'
+  if (V8_UNLIKELY(val_ == nullptr)) V8::ToLocalEmpty();
+                          ^
+/usr/local/include/v8config.h:370:54: note: expanded from macro 'V8_UNLIKELY'
+# define V8_UNLIKELY(condition) (__builtin_expect(!!(condition), 0))
+                                                     ^
+In file included from accessor.cc:1:
+./rr.h:358:39: error: no member named 'ScriptData' in namespace 'v8'
+class ScriptData : public Pointer<v8::ScriptData> {
+                                  ~~~~^
+./rr.h:358:51: error: expected class name
+class ScriptData : public Pointer<v8::ScriptData> {
+                                                  ^
+./rr.h:360:21: error: no type named 'ScriptData' in namespace 'v8'; did you mean simply 'ScriptData'?
+  inline ScriptData(v8::ScriptData* d) : Pointer<v8::ScriptData>(d) {};
+                    ^~~~~~~~~~~~~~
+                    ScriptData
+./rr.h:358:7: note: 'ScriptData' declared here
+class ScriptData : public Pointer<v8::ScriptData> {
+      ^
+./rr.h:360:54: error: no member named 'ScriptData' in namespace 'v8'
+  inline ScriptData(v8::ScriptData* d) : Pointer<v8::ScriptData>(d) {};
+                                                 ~~~~^
+./rr.h:360:65: error: expected class member or base class name
+  inline ScriptData(v8::ScriptData* d) : Pointer<v8::ScriptData>(d) {};
+                                                                ^
+./rr.h:360:65: error: expected '{' or ','
+./rr.h:361:48: error: no member named 'ScriptData' in namespace 'v8'
+  inline ScriptData(VALUE value) : Pointer<v8::ScriptData>(value) {}
+                                           ~~~~^
+./rr.h:361:59: error: expected class member or base class name
+  inline ScriptData(VALUE value) : Pointer<v8::ScriptData>(value) {}
+                                                          ^
+fatal error: too many errors emitted, stopping now [-ferror-limit=]
+20 errors generated.
+make: *** [accessor.o] Error 1
+
+make failed, exit code 2
