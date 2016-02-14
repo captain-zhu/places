@@ -31,5 +31,9 @@ class Place
     @location = Point.new params[:geometry][:location]
   end
 
+  #ﬁnd all documents in the places collection with a matching address_components.short_name
+  def self.find_by_short_name short_name
+    self.collection.find("address_components.short_name" => short_name)
 
+  end
 end
