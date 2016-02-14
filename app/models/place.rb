@@ -135,4 +135,16 @@ class Place
       doc[:_id].to_s
     }
   end
+
+  # create a 2dsphere index to your collection for the geometry.geolocation property.
+  def self.create_indexes
+    collection.indexes.create_one(:"geometry.geolocation" => Mongo::Index::GEO2DSPHERE)
+  end
+
+  # remove a 2dsphere index to your collection for the geometry.geolocation property.
+  def self.remove_indexes
+    collection.indexes.drop_one('geometry.geolocation_2dsphere')
+  end
+
+
 end
