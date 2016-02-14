@@ -34,6 +34,26 @@ class Place
   #ﬁnd all documents in the places collection with a matching address_components.short_name
   def self.find_by_short_name short_name
     self.collection.find("address_components.short_name" => short_name)
-
   end
+
+  #accept a Mongo::Collection::View and return a collection of Place instances.
+  def self.to_places param
+    places = Array.new
+    param.each do |place|
+      places.push Place.new(place)
+    end
+    return places
+  end
+  #return an instance of Place for a supplied id
+  def self.find id
+    object_id = BSON::ObjectId.from_string id
+    Place.new self.collection.find("_id" => object_id).first
+  end
+
+  #return an instance of all documents as Place instances
+  def self.all offset=0, limit=0
+    self.to_places self.collection.find().skip(offset).limit(limit)
+  end
+
+
 end
