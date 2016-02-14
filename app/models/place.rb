@@ -19,16 +19,11 @@ class Place
     self.collection.insert_many(data_hash)
   end
 
-  def initialize params
+  def initialize params={}
     @id = params[:_id].nil?? params[:id] : params[:_id].to_s
-    address_components = params[:address_components]
-    @address_components = Array.new
-    address_components.each do |address_component|
-      address_component_instance = AddressComponent.new address_component
-      @address_components.push address_component_instance
-    end
+    @address_components = params[:address_components].map { |a| AddressComponent.new(a) } unless params[:address_components].nil?
     @formatted_address = params[:formatted_address]
-    @location = Point.new params[:geometry][:location]
+    @location = Point.new params[:geometry][:geolocation]
   end
 
   # ﬁnd all documents in the places collection with a matching address_components.short_name
@@ -37,12 +32,10 @@ class Place
   end
 
   #accept a Mongo::Collection::View and return a collection of Place instances.
-  def self.to_places param
-    places = Array.new
-    param.each do |place|
-      places.push Place.new(place)
+  def self.to_places params
+    params.map do |param|
+      Place.new param
     end
-    return places
   end
   # return an instance of Place for a supplied id
   def self.find id
@@ -82,7 +75,7 @@ class Place
     prototype << {:$skip => offset} if !offset.nil?
     prototype << {:$limit => limit} if !limit.nil?
 
-    collection.find.aggregate prototype
+    self.collection.find.aggregate prototype
   end
 
   # a distinct collection of country names (long_names)
@@ -109,7 +102,7 @@ class Place
             }
         }
     ]
-    collection.find.aggregate(prototype).to_a.map {|doc|
+    self.collection.find.aggregate(prototype).to_a.map {|doc|
       doc[:_id]
     }
   end
@@ -131,20 +124,35 @@ class Place
             }
         }
     ]
-    collection.find.aggregate(prototype).map { |doc|
+    self.collection.find.aggregate(prototype).map { |doc|
       doc[:_id].to_s
     }
   end
 
   # create a 2dsphere index to your collection for the geometry.geolocation property.
   def self.create_indexes
-    collection.indexes.create_one(:"geometry.geolocation" => Mongo::Index::GEO2DSPHERE)
+    self.collection.indexes.create_one(:"geometry.geolocation" => Mongo::Index::GEO2DSPHERE)
   end
 
   # remove a 2dsphere index to your collection for the geometry.geolocation property.
   def self.remove_indexes
-    collection.indexes.drop_one('geometry.geolocation_2dsphere')
+    self.collection.indexes.drop_one('geometry.geolocation_2dsphere')
   end
 
+  # returns places that are closest to provided Point.
+  def self.near point, max_meters=nil
+    self.collection.find(:"geometry.geolocation" => {
+        :$near => {
+            :$geometry => point.to_hash,
+            :$maxDistance => max_meters
+        }
+    })
+  end
+
+  # wraps the class near method
+  def near max_meters=nil
+    documents = self.class.near(@location, max_meters)
+    self.class.to_places(documents)
+  end
 
 end

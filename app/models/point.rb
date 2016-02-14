@@ -4,7 +4,7 @@ class Point
   attr_accessor :longitude, :latitude;
 
   def initialize hash
-    if hash.has_key? :coordinates
+    if !hash[:coordinates].nil?
       @longitude = hash[:coordinates][0]
       @latitude = hash[:coordinates][1]
     else
