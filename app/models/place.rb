@@ -155,6 +155,13 @@ class Place
     self.class.to_places(documents)
   end
 
-
+  # return a collection of Photos that have been associated with the place
+  def photos offset=0, limit=nil
+    docs = Photo.find_photos_for_place(@id).skip(offset)
+    docs.limit(limit) if !limit.nil?
+    docs.map { |doc|
+      Photo.new doc
+    }
+  end
 
 end
