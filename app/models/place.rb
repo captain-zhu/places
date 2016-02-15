@@ -155,4 +155,6 @@ class Place
     self.class.to_places(documents)
   end
 
+
+
 end

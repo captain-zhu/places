@@ -77,6 +77,12 @@ class Photo
     self.class.mongo_client.database.fs.find(:_id => BSON::ObjectId(@id)).delete_one
   end
 
+  # will return the _id of the document within the places collection.
+  def find_nearest_place_id max_meters
+    place = Place.near(@location, max_meters).limit(1).projection(:_id=>1).first
+    return place.nil?? nil : place[:_id]
+  end
+
 
 
 end
