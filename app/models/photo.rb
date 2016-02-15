@@ -29,17 +29,18 @@ class Photo
       description[:metadata][:location] = @location.to_hash
 
       if @contents
+        @contents.rewind
         grid_file = Mongo::Grid::File.new(@contents.read, description)
         id = self.mongo_client.database.fs.insert_one grid_file
         @id = id.to_s
       end
-    # else
-    #   self.class.mongo_client.database.fs.find(:_id => BSON::ObjectId(@id))
-    #       .update_one(:$set => {
-    #           :metadata => {
-    #               :location => @location.to_hash,
-    #           }
-    #       })
+    else
+      self.class.mongo_client.database.fs.find(:_id => BSON::ObjectId(@id))
+          .update_one(:$set => {
+              :metadata => {
+                  :location => @location.to_hash,
+              }
+          })
     end
   end
 
@@ -57,6 +58,18 @@ class Photo
     _id = BSON::ObjectId.from_string id
     doc =self.mongo_client.database.fs.find(:_id => _id).first
     return doc.nil?? nil : Photo.new(doc)
+  end
+
+  # Create a custom getter for contents that will return the data contents of the ﬁle
+  def contents
+    doc = self.class.mongo_client.database.fs.find_one(:_id => BSON::ObjectId(@id))
+    if doc
+      buffer = ""
+      doc.chunks.reduce([]) do |x, chunk|
+        buffer << chunk.data.data
+      end
+      return buffer
+    end
   end
 
 
