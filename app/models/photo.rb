@@ -11,6 +11,7 @@ class Photo
   def initialize hash={}
     @id = hash[:_id].to_s unless hash[:_id].nil?
     @location = Point.new hash[:metadata][:location] unless hash[:metadata].nil?
+    @place = hash[:metadata][:place] if !hash[:metadata].nil?
   end
 
   # return true if the instance has been created within GridFS
@@ -27,6 +28,7 @@ class Photo
       description[:metadata] = {}
       @location = Point.new(:lng => gps.longitude,  :lat => gps.latitude)
       description[:metadata][:location] = @location.to_hash
+      description[:metadata][:place] = @place
 
       if @contents
         @contents.rewind
@@ -39,6 +41,7 @@ class Photo
           .update_one(:$set => {
               :metadata => {
                   :location => @location.to_hash,
+                  :place => @place
               }
           })
     end
@@ -83,6 +86,20 @@ class Photo
     return place.nil?? nil : place[:_id]
   end
 
+  # place attr get method
+  def place
+    Place.find(@place.to_s) if !@place.nil?
+  end
 
+  # place attr set method
+  def place= place
+    if place.class == Place
+      @place = BSON::ObjectId.from_string(place.id)
+    elsif place.class == String
+      @place = BSON::ObjectId.from_string(place)
+    else
+      @place = place
+    end
+  end
 
 end
