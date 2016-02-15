@@ -58,8 +58,8 @@ class Photo
 
   # return an instance of a Photo based on the input id
   def self.find id
-    _id = BSON::ObjectId.from_string id
-    doc =self.mongo_client.database.fs.find(:_id => _id).first
+    id = BSON::ObjectId.from_string id if id.class==String
+    doc =self.mongo_client.database.fs.find(:_id => id).first
     return doc.nil?? nil : Photo.new(doc)
   end
 
@@ -100,6 +100,13 @@ class Photo
     else
       @place = place
     end
+  end
+
+  # accepts the BSON::ObjectId of a Place and returns a collection view of photo documents that
+  # have the foreign key reference.
+  def self.find_photos_for_place id
+    id = BSON::ObjectId.from_string(id) if id.class==String
+    self.mongo_client.database.fs.find(:"metadata.place" => id)
   end
 
 end
