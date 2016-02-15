@@ -72,6 +72,11 @@ class Photo
     end
   end
 
+  # delete the ﬁle and contents associated with the ID of the object instance
+  def destroy
+    self.class.mongo_client.database.fs.find(:_id => BSON::ObjectId(@id)).delete_one
+  end
+
 
 
 end
