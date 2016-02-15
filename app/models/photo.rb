@@ -52,6 +52,13 @@ class Photo
     }
   end
 
+  # return an instance of a Photo based on the input id
+  def self.find id
+    _id = BSON::ObjectId.from_string id
+    doc =self.mongo_client.database.fs.find(:_id => _id).first
+    return doc.nil?? nil : Photo.new(doc)
+  end
+
 
 
 end
