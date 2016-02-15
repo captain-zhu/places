@@ -1,5 +1,6 @@
 class Place
   include Mongoid::Document
+  include ActiveModel::Model
   require 'json'
 
   attr_accessor :id, :formatted_address, :location, :address_components
@@ -26,6 +27,10 @@ class Place
     @location = Point.new params[:geometry][:geolocation]
   end
 
+  def persisted?
+    !@id.nil?
+  end
+
   # ﬁnd all documents in the places collection with a matching address_components.short_name
   def self.find_by_short_name short_name
     self.collection.find(:"address_components.short_name" => short_name)
@@ -39,8 +44,8 @@ class Place
   end
   # return an instance of Place for a supplied id
   def self.find id
-    object_id = BSON::ObjectId.from_string id
-    document = self.collection.find(:_id => object_id).first
+    id = BSON::ObjectId.from_string id if id.class==String
+    document = self.collection.find(:_id => id).first
     return document.nil?? nil : Place.new(document)
   end
 
@@ -163,5 +168,4 @@ class Place
       Photo.new doc
     }
   end
-
 end
