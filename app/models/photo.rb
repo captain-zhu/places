@@ -43,6 +43,15 @@ class Photo
     end
   end
 
+  # return a collection of Photo instances representing each ﬁle returned from the database
+  def self.all skip=0, limit=nil
+    docs = self.mongo_client.database.fs.find().skip(skip)
+    docs = docs.limit(limit) if !limit.nil?
+    docs.map { |doc|
+      Photo.new doc
+    }
+  end
+
 
 
 end
